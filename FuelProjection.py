@@ -14,10 +14,14 @@ B0 = {1: 6.08e8, 2: 4.9e9, 3: 1.81e9, 4: 4.61e8}
 C0 = {1: 2.44e7, 2: 5.23e8, 3: 30e9, 4: 3.49e5}
 G0 = {1: 1.71e11, 2: 3.51e11, 3: 3.17e7, 4: 2.41e10}
 O0 = {1: 2.43e7, 2: 3.69e8, 3: 4.53e10, 4: 4.13e8}
-B_rate = {1: -1.6e-2, 2: -2.2e-4, 3: 0., 4: 5.8e-2}
+B_rate = {1: 1.39e-3, 2: 1.84e-3, 3: 1.89e-3, 4: 2.70}
 C_rate = {1: 1.91e-3, 2: 1.50, 3: 2.95, 4: 0.}
 G_rate = {1: 0.122, 2: 0.014, 3: 0.123, 4: 0.}
 O_rate = {1: 0.11, 2: 1.54, 3: 0.72, 4: 2.09e-3}
+B_CO2 = 'To do'
+C_C02 = 2.30e-3
+G_CO2 = 3.36e-8
+O_CO2 = 3.32e-3
 
 # Create dictionaries to store data:
 P = {1: [], 2: [], 3: [], 4: []}
@@ -75,7 +79,7 @@ for i in country:
 plt.gcf()
 plt.legend(loc=4)
 plt.xlabel(r'Time elapsed (years)')
-plt.ylabel(r'Population')
+plt.ylabel(r'Coal (tonnes)')
 plt.savefig('plots/coal_' + model + '.pdf', bbox_inches='tight')
 
 # Plot gas curves:
@@ -90,7 +94,7 @@ for i in country:
 plt.gcf()
 plt.legend(loc=4)
 plt.xlabel(r'Time elapsed (years)')
-plt.ylabel(r'Population')
+plt.ylabel(r'Gas (tonnes)')
 plt.savefig('plots/gas_' + model + '.pdf', bbox_inches='tight')
 
 # Plot oil curves:
@@ -105,7 +109,7 @@ for i in country:
 plt.gcf()
 plt.legend(loc=4)
 plt.xlabel(r'Time elapsed (years)')
-plt.ylabel(r'Population')
+plt.ylabel(r'Oil (tonnes)')
 plt.savefig('plots/oil_' + model + '.pdf', bbox_inches='tight')
 
 # Plot biofuel curves:
@@ -119,7 +123,7 @@ for i in country:
     else:
         raise NotImplementedError('Model not yet considered.')
 plt.gcf()
-plt.legend(loc=3)
+plt.legend(loc=4)
 plt.xlabel(r'Time elapsed (years)')
-plt.ylabel(r'Population')
+plt.ylabel(r'Biomass (tonnes)')
 plt.savefig('plots/bio_' + model + '.pdf', bbox_inches='tight')
