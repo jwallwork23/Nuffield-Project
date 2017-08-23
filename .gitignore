@@ -1,6 +1,5 @@
 # File types to ignore:
-
 *.DS_Store
-*.pdf
-*.pages
-*.docx
+
+# Directories to ignore:
+docs/
