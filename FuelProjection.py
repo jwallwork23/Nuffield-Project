@@ -32,7 +32,7 @@ P0 = {1: 11.4e6, 2: 127e6, 3: 53.3e6, 4: 37.5e6}
 P_rate = {1: 1.39e-3, 2: 9.35e-3, 3: 1.57e-2, 4: 3.31e-2}
 WP0 = 7.5e9                                                 # World population
 
-# List initial fuel values and consumption rates:
+# List initial fuel values and consumption rates:       TODO: combine world values as if they were a country
 B0 = {1: 6.08e8, 2: 4.9e9, 3: 1.81e9, 4: 4.61e8}
 C0 = {1: 2.44e7, 2: 5.23e8, 3: 30e9, 4: 3.49e5}
 G0 = {1: 1.71e11, 2: 3.51e11, 3: 3.17e7, 4: 2.41e10}
