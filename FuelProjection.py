@@ -4,6 +4,28 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
+def biomass_quadrature_step(P0, K, r, g, t, h):
+    """
+    A quadrature routine for approximating the increase in integral involved in the biomass logistic model solution.
+    
+    :param P0: initial human population.
+    :param K: carrying capacity of region considered.
+    :param r: rate of growth of population.
+    :param g: biomass growth rate.
+    :param t: end of time period considered.
+    :param h: strip width.
+    :return: integral in time interval [t-1, t].
+    """
+    I = 0.
+    for j in range(int(t / h) - 1, int(t / h)):
+        term = np.exp((r - g) * j * h) / (K + P0 * (np.exp(r * j * h) - 1))
+        if j in (0, int(t / h) -1):
+            I += term / 2
+        else:
+            I += term
+    return I * h
+
+
 # List countries, initial populations and growth rates:
 country = {1: 'Cuba', 2: 'Japan', 3: 'South Africa', 4: 'Uganda'}
 P0 = {1: 11.4e6, 2: 127e6, 3: 53.3e6, 4: 37.5e6}
@@ -54,6 +76,12 @@ T = int(raw_input('Simulation duration in years? (Default 100): ') or 100)
 g = float(raw_input('Biomass growth rate? (Default 0.01): ') or 0.01)
 W = 7.5e9                                       # World population
 
+# TO DO: shorten syntax using functions involving e.g.
+fuel_names = {1 : 'coal', 2: 'gas', 3: 'oil'}
+fossil_fuels = {1 : C, 2: G, 3: O}
+initial_fuels = {1: C0, 2: G0, 3: O0}
+fuel_rates = {1: C_rate, 2: G_rate, 3: O_rate}
+
 # Plotting setup:
 styles = {1: ':', 2: '--', 3: '-.', 4: '-'}
 plt.rc('text', usetex=True)
@@ -102,50 +130,22 @@ plt.xlabel(r'Time elapsed (years)')
 plt.ylabel(r'World population')
 plt.savefig('plots/world_population_' + model + '.pdf', bbox_inches='tight')
 
-# Plot coal curves:
-plt.clf()
-for i in country:
-    if model == 'Malthus':
-        for t in t_axis:
-            C[i].append(C0[i] - C_rate[i] * P0[i] * (np.exp(P_rate[i] * t) - 1) / P_rate[i])
-        plt.semilogy(t_axis, C[i], label=country[i], linestyle=styles[i])
-    else:
-        raise NotImplementedError('Model not yet considered.')
-plt.gcf()
-plt.legend(loc=4)
-plt.xlabel(r'Time elapsed (years)')
-plt.ylabel(r'Coal (tonnes)')
-plt.savefig('plots/coal_' + model + '.pdf', bbox_inches='tight')
-
-# Plot gas curves:
-plt.clf()
-for i in country:
-    if model == 'Malthus':
-        for t in t_axis:
-            G[i].append(G0[i] - G_rate[i] * P0[i] * (np.exp(P_rate[i] * t) - 1) / P_rate[i])
-        plt.semilogy(t_axis, G[i], label=country[i], linestyle=styles[i])
-    else:
-        raise NotImplementedError('Model not yet considered.')
-plt.gcf()
-plt.legend(loc=4)
-plt.xlabel(r'Time elapsed (years)')
-plt.ylabel(r'Gas (tonnes)')
-plt.savefig('plots/gas_' + model + '.pdf', bbox_inches='tight')
-
-# Plot oil curves:
-plt.clf()
-for i in country:
-    if model == 'Malthus':
-        for t in t_axis:
-            O[i].append(O0[i] - O_rate[i] * P0[i] * (np.exp(P_rate[i] * t) - 1) / P_rate[i])
-        plt.semilogy(t_axis, O[i], label=country[i], linestyle=styles[i])
-    else:
-        raise NotImplementedError('Model not yet considered.')
-plt.gcf()
-plt.legend(loc=4)
-plt.xlabel(r'Time elapsed (years)')
-plt.ylabel(r'Oil (tonnes)')
-plt.savefig('plots/oil_' + model + '.pdf', bbox_inches='tight')
+# Plot fossil fuel curves:
+for fuel in fossil_fuels:
+    plt.clf()
+    for i in country:
+        if model == 'Malthus':
+            for t in t_axis:
+                fossil_fuels[fuel][i].append(initial_fuels[fuel][i] -
+                                             fuel_rates[fuel][i] * P0[i] * (np.exp(P_rate[i] * t) - 1) / P_rate[i])
+            plt.semilogy(t_axis, fossil_fuels[fuel][i], label=country[i], linestyle=styles[i])
+        else:
+            raise NotImplementedError('Model not yet considered.')
+    plt.gcf()
+    plt.legend(loc=4)
+    plt.xlabel(r'Time elapsed (years)')
+    plt.ylabel(r'Coal (tonnes)')
+    plt.savefig('plots/{y}_'.format(y=fuel_names[fuel]) + model + '.pdf', bbox_inches='tight')
 
 # Plot biomass curves:
 plt.clf()
