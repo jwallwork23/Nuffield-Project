@@ -64,6 +64,12 @@ WO = {1: [], 2: [], 3: [], 4: []}
 WE = {1: [], 2: [], 3: [], 4: []}
 WT = {1: [], 2: [], 3: [], 4: []}
 
+# Condense data into nested dictionaries:
+fuel_names = {1 : 'Coal', 2: 'Gas', 3: 'Oil'}
+fossil_fuels = {1 : C, 2: G, 3: O}
+initial_fuels = {1: C0, 2: G0, 3: O0}
+fuel_rates = {1: C_rate, 2: G_rate, 3: O_rate}
+
 K = {1: 1.52e7, 2: 1.69e8, 3: 7.11e7, 4: 5e7}   # Carrying capacity of countries
 WK = 10e9                                       # Carrying capacity of world
 lam = 0.8                                       # Climate sensitivity
@@ -75,12 +81,6 @@ T = int(raw_input('Simulation duration in years? (Default 100): ') or 100)
 # Other parameters:
 g = float(raw_input('Biomass growth rate? (Default 0.01): ') or 0.01)
 W = 7.5e9                                       # World population
-
-# TO DO: shorten syntax using functions involving e.g.
-fuel_names = {1 : 'coal', 2: 'gas', 3: 'oil'}
-fossil_fuels = {1 : C, 2: G, 3: O}
-initial_fuels = {1: C0, 2: G0, 3: O0}
-fuel_rates = {1: C_rate, 2: G_rate, 3: O_rate}
 
 # Plotting setup:
 styles = {1: ':', 2: '--', 3: '-.', 4: '-'}
@@ -144,7 +144,7 @@ for fuel in fossil_fuels:
     plt.gcf()
     plt.legend(loc=4)
     plt.xlabel(r'Time elapsed (years)')
-    plt.ylabel(r'Coal (tonnes)')
+    plt.ylabel(r'{y} (tonnes)'.format(y=fuel_names[fuel]))
     plt.savefig('plots/{y}_'.format(y=fuel_names[fuel]) + model + '.pdf', bbox_inches='tight')
 
 # Plot biomass curves:
