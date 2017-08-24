@@ -139,8 +139,8 @@ for fuel in fossil_fuels:
     for i in country:
         if model == 'Malthus':
             for t in t_axis:
-                fossil_fuels[fuel][i].append(initial_fuels[fuel][i] -
-                                             fuel_rates[fuel][i] * P0[i] * (np.exp(P_rate[i] * t) - 1) / P_rate[i])
+                fossil_fuels[fuel][i].append(initial_fuels[fuel][i] - fuel_rates[fuel][i]
+                                             * (P[i][len(fossil_fuels[fuel][i])] - P0[i]) / P_rate[i])
             plt.semilogy(t_axis, fossil_fuels[fuel][i], label=country[i], linestyle=styles[i])
         else:
             raise NotImplementedError('Model not yet considered.')
@@ -156,7 +156,7 @@ for i in country:
     if model == 'Malthus':
         for t in t_axis:
             B[i].append(B0[i] * np.exp(g * t)
-                        + B_rate[i] * P0[i] * (np.exp(P_rate[i] * t) - np.exp(g * t)) / (g - P_rate[i]))
+                        + B_rate[i] * (P[i][len(B[i])] - P0[i] * np.exp(g * t)) / (g - P_rate[i]))
         plt.semilogy(t_axis, B[i], label=country[i], linestyle=styles[i])
     else:
         raise NotImplementedError('Model not yet considered.')
