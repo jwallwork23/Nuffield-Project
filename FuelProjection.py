@@ -94,7 +94,10 @@ for i in country:
     else:
         raise ValueError('Model selection not recognised.')
 plt.gcf()
-plt.legend(loc=4)
+if model == 'Malthus':
+    plt.legend(loc=2)
+else:
+    plt.legend(loc=4)
 plt.xlabel(r'Time elapsed (years)')
 plt.ylabel(r'World population')
 plt.savefig('plots/world_population_' + model + '.pdf', bbox_inches='tight')
@@ -158,7 +161,7 @@ plt.gcf()
 plt.legend(loc=4)
 plt.xlabel(r'Time elapsed (years)')
 plt.ylabel(r'Biomass (tonnes)')
-plt.savefig('plots/bio_' + model + '.pdf', bbox_inches='tight')
+plt.savefig('plots/bio_' + model + '_g={y}.pdf'.format(y=g), bbox_inches='tight')
 
 # Plot world coal curves:
 plt.clf()
@@ -200,7 +203,7 @@ for i in country:
     else:
         raise NotImplementedError('Model not yet considered.')
 plt.gcf()
-plt.legend(loc=4)
+plt.legend(loc=3)
 plt.xlabel(r'Time elapsed (years)')
 plt.ylabel(r'Oil (tonnes)')
 plt.savefig('plots/world_oil_' + model + '.pdf', bbox_inches='tight')
@@ -219,23 +222,26 @@ plt.gcf()
 plt.legend(loc=4)
 plt.xlabel(r'Time elapsed (years)')
 plt.ylabel(r'Biomass (tonnes)')
-plt.savefig('plots/world_bio_' + model + '.pdf', bbox_inches='tight')
+plt.savefig('plots/world_bio_' + model + '_g={y}.pdf'.format(y=g), bbox_inches='tight')
 
 # Plot world emissions curves:
 plt.clf()
 for i in country:
     if model == 'Malthus':
-        for t in t_axis:
+        WE0 = WP0 * (B_CO2 * B_rate[i] + C_CO2 * C_rate[i] + G_CO2 * G_rate[i] + O_CO2 * O_rate[i]) \
+                         * (np.exp(P_rate[i] * 0)) / P_rate[i]
+        WE[i].append(0)
+        for t in t_axis[1:]:
             WE[i].append(WP0 * (B_CO2 * B_rate[i] + C_CO2 * C_rate[i] + G_CO2 * G_rate[i] + O_CO2 * O_rate[i]) \
-                         * (np.exp(P_rate[i] * t)) / P_rate[i])
+                         * (np.exp(P_rate[i] * t)) / P_rate[i] - WE0)
         plt.semilogy(t_axis, WE[i], label=country[i], linestyle=styles[i])
     else:
         raise NotImplementedError('Model not yet considered.')
 plt.gcf()
-plt.legend(loc=2)
+plt.legend(loc=4)
 plt.xlabel(r'Time elapsed (years)')
 plt.ylabel(r'Estimated world CO2 emissions (tonnes)')
-plt.savefig('plots/C02_emissions_' + model + '.pdf', bbox_inches='tight')
+plt.savefig('plots/C02_emissions_' + model + '_g={y}.pdf'.format(y=g), bbox_inches='tight')
 
 # Plot world temperature change curves:
 plt.clf()
@@ -252,4 +258,4 @@ plt.gcf()
 plt.legend(loc=4)
 plt.xlabel(r'Time elapsed (years)')
 plt.ylabel(r'Estimated world temperature change (Kelvin)')
-plt.savefig('plots/temp_change_' + model + '.pdf', bbox_inches='tight')
+plt.savefig('plots/temp_change_' + model + '_g={y}.pdf'.format(y=g), bbox_inches='tight')
