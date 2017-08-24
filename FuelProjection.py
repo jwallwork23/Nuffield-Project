@@ -30,19 +30,14 @@ def biomass_quadrature_step(P0, K, r, g, t, h):
 
 # List countries, initial populations and growth rates:
 country = {1: 'Cuba', 2: 'Japan', 3: 'South Africa', 4: 'Uganda'}
-P0 = {1: 11.4e6, 2: 127e6, 3: 53.3e6, 4: 37.5e6}
+P0 = {1: 11.4e6, 2: 127e6, 3: 53.3e6, 4: 37.5e6, 5: 7.5e9}          # 5th is world population
 P_rate = {1: 1.39e-3, 2: 9.35e-3, 3: 1.57e-2, 4: 3.31e-2}
-WP0 = 7.5e9  # World population
 
-# List initial fuel values and consumption rates:       TODO: combine world values as if they were a country
-B0 = {1: 6.08e8, 2: 4.9e9, 3: 1.81e9, 4: 4.61e8}
-C0 = {1: 2.44e7, 2: 5.23e8, 3: 30e9, 4: 3.49e5}
-G0 = {1: 1.71e11, 2: 3.51e11, 3: 3.17e7, 4: 2.41e10}
-O0 = {1: 2.43e7, 2: 3.69e8, 3: 4.53e10, 4: 4.13e8}
-WB0 = 2.4e13
-WC0 = 4.7e12
-WG0 = 8.7e12
-WO0 = 1.9e12
+# List initial fuel values and consumption rates:
+B0 = {1: 6.08e8, 2: 4.9e9, 3: 1.81e9, 4: 4.61e8, 5: 2.4e13}
+C0 = {1: 2.44e7, 2: 5.23e8, 3: 30e9, 4: 3.49e5, 5: 4.7e12}
+G0 = {1: 1.71e11, 2: 3.51e11, 3: 3.17e7, 4: 2.41e10, 5: 8.7e12}
+O0 = {1: 2.43e7, 2: 3.69e8, 3: 4.53e10, 4: 4.13e8, 5: 1.9e12}
 B_rate = {1: 1.39e-3, 2: 1.84e-3, 3: 1.89e-3, 4: 2.70}
 C_rate = {1: 1.91e-3, 2: 1.50, 3: 2.95, 4: 0.}
 G_rate = {1: 0.122, 2: 0.014, 3: 0.123, 4: 0.}
@@ -69,6 +64,7 @@ WT = {1: [], 2: [], 3: [], 4: []}
 # Condense data into nested dictionaries:
 fuel_names = {1: 'Coal', 2: 'Gas', 3: 'Oil'}
 fossil_fuels = {1: C, 2: G, 3: O}
+world_fossil_fuels = {1: WC, 2: WG, 3: WO}
 initial_fuels = {1: C0, 2: G0, 3: O0}
 fuel_rates = {1: C_rate, 2: G_rate, 3: O_rate}
 
@@ -116,11 +112,11 @@ plt.clf()
 for i in country:
     if model == 'Malthus':
         for t in t_axis:
-            WP[i].append(WP0 * np.exp(P_rate[i] * t))
+            WP[i].append(P0[5] * np.exp(P_rate[i] * t))
         plt.semilogy(t_axis, WP[i], label=country[i], linestyle=styles[i])
     elif model == 'Logistic':
         for t in t_axis:
-            WP[i].append((WP0 * WK * np.exp(P_rate[i] * t)) / (WK + WP0 * (np.exp(P_rate[i] * t) - 1)))
+            WP[i].append((P0[5] * WK * np.exp(P_rate[i] * t)) / (WK + P0[5] * (np.exp(P_rate[i] * t) - 1)))
         plt.semilogy(t_axis, WP[i], label=country[i], linestyle=styles[i])
     else:
         raise ValueError('Model selection not recognised.')
@@ -135,6 +131,8 @@ plt.savefig('plots/world_population_' + model + '.pdf', bbox_inches='tight')
 
 # Plot fossil fuel curves:
 for fuel in fossil_fuels:
+
+    # Country-wise:
     plt.clf()
     for i in country:
         if model == 'Malthus':
@@ -150,7 +148,23 @@ for fuel in fossil_fuels:
     plt.ylabel(r'{y} (tonnes)'.format(y=fuel_names[fuel]))
     plt.savefig('plots/{y}_'.format(y=fuel_names[fuel]) + model + '.pdf', bbox_inches='tight')
 
-# Plot biomass curves:
+    # Worldwide projection:
+    plt.clf()
+    for i in country:
+        if model == 'Malthus':
+            for t in t_axis:
+                world_fossil_fuels[fuel][i].append(initial_fuels[fuel][5] - fuel_rates[fuel][i]
+                                                   * (WP[i][len(world_fossil_fuels[fuel][i])] - P0[5]) / P_rate[i])
+            plt.semilogy(t_axis, fossil_fuels[fuel][i], label=country[i], linestyle=styles[i])
+        else:
+            raise NotImplementedError('Model not yet considered.')
+    plt.gcf()
+    plt.legend(loc=4)
+    plt.xlabel(r'Time elapsed (years)')
+    plt.ylabel(r'{y} (tonnes)')
+    plt.savefig('plots/world_{y}_'.format(y=fuel_names[fuel]) + model + '.pdf', bbox_inches='tight')
+
+# Plot country-wise biomass curves:
 plt.clf()
 for i in country:
     if model == 'Malthus':
@@ -166,58 +180,13 @@ plt.xlabel(r'Time elapsed (years)')
 plt.ylabel(r'Biomass (tonnes)')
 plt.savefig('plots/bio_' + model + '_g={y1}.pdf'.format(y1=g), bbox_inches='tight')
 
-# Plot world coal curves:
+# Plot worldwide projected biomass curves:
 plt.clf()
 for i in country:
     if model == 'Malthus':
         for t in t_axis:
-            WC[i].append(WC0 - C_rate[i] * WP0 * (np.exp(P_rate[i] * t) - 1) / P_rate[i])
-        plt.semilogy(t_axis, WC[i], label=country[i], linestyle=styles[i])
-    else:
-        raise NotImplementedError('Model not yet considered.')
-plt.gcf()
-plt.legend(loc=3)
-plt.xlabel(r'Time elapsed (years)')
-plt.ylabel(r'Coal (tonnes)')
-plt.savefig('plots/world_coal_' + model + '.pdf', bbox_inches='tight')
-
-# Plot world gas curves:
-plt.clf()
-for i in country:
-    if model == 'Malthus':
-        for t in t_axis:
-            WG[i].append(WG0 - G_rate[i] * WP0 * (np.exp(P_rate[i] * t) - 1) / P_rate[i])
-        plt.semilogy(t_axis, WG[i], label=country[i], linestyle=styles[i])
-    else:
-        raise NotImplementedError('Model not yet considered.')
-plt.gcf()
-plt.legend(loc=4)
-plt.xlabel(r'Time elapsed (years)')
-plt.ylabel(r'Gas (tonnes)')
-plt.savefig('plots/world_gas_' + model + '.pdf', bbox_inches='tight')
-
-# Plot world oil curves:
-plt.clf()
-for i in country:
-    if model == 'Malthus':
-        for t in t_axis:
-            WO[i].append(WO0 - O_rate[i] * WP0 * (np.exp(P_rate[i] * t) - 1) / P_rate[i])
-        plt.semilogy(t_axis, WO[i], label=country[i], linestyle=styles[i])
-    else:
-        raise NotImplementedError('Model not yet considered.')
-plt.gcf()
-plt.legend(loc=3)
-plt.xlabel(r'Time elapsed (years)')
-plt.ylabel(r'Oil (tonnes)')
-plt.savefig('plots/world_oil_' + model + '.pdf', bbox_inches='tight')
-
-# Plot world biomass curves:
-plt.clf()
-for i in country:
-    if model == 'Malthus':
-        for t in t_axis:
-            WB[i].append(WB0 * np.exp(g * t)
-                         + B_rate[i] * WP0 * (np.exp(P_rate[i] * t) - np.exp(g * t)) / (g - P_rate[i]))
+            WB[i].append(B0[5] * np.exp(g * t)
+                         + B_rate[i] * (WP[i][len(WB[i])] - P0[5] * np.exp(g * t)) / (g - P_rate[i]))
         plt.semilogy(t_axis, WB[i], label=country[i], linestyle=styles[i])
     else:
         raise NotImplementedError('Model not yet considered.')
@@ -227,15 +196,15 @@ plt.xlabel(r'Time elapsed (years)')
 plt.ylabel(r'Biomass (tonnes)')
 plt.savefig('plots/world_bio_' + model + '_g={y1}.pdf'.format(y1=g), bbox_inches='tight')
 
-# Plot world emissions curves:
+# Plot worldwide projected emissions curves:
 plt.clf()
 for i in country:
     if model == 'Malthus':
-        WE0 = WP0 * (B_CO2[trees] * B_rate[i] + C_CO2 * C_rate[i] + G_CO2 * G_rate[i] + O_CO2 * O_rate[i]) \
+        WE0 = P0[5] * (B_CO2[trees] * B_rate[i] + C_CO2 * C_rate[i] + G_CO2 * G_rate[i] + O_CO2 * O_rate[i]) \
               * (np.exp(P_rate[i] * 0)) / P_rate[i]
         WE[i].append(0)
         for t in t_axis[1:]:
-            WE[i].append(WP0 * (B_CO2[trees] * B_rate[i] + C_CO2 * C_rate[i] + G_CO2 * G_rate[i] + O_CO2 * O_rate[i]) \
+            WE[i].append(P0[5] * (B_CO2[trees] * B_rate[i] + C_CO2 * C_rate[i] + G_CO2 * G_rate[i] + O_CO2 * O_rate[i]) \
                          * (np.exp(P_rate[i] * t)) / P_rate[i] - WE0)
         plt.semilogy(t_axis, WE[i], label=country[i], linestyle=styles[i])
     else:
@@ -246,7 +215,7 @@ plt.xlabel(r'Time elapsed (years)')
 plt.ylabel(r'Estimated world CO2 emissions (tonnes)')
 plt.savefig('plots/C02_emissions_' + model + '_g={y1}_trees={y2}.pdf'.format(y1=g, y2=trees), bbox_inches='tight')
 
-# Plot world temperature change curves:
+# Plot worldwode projected temperature change curves:
 plt.clf()
 for i in country:
     if model == 'Malthus':
