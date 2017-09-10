@@ -3,3 +3,6 @@
 
 # Directories to ignore:
 docs/
+
+# Files to ignore:
+NuffieldPoster.pdf
