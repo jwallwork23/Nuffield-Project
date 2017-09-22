@@ -96,6 +96,10 @@ else:
     g = 'OFF'
     trees = 'OFF'
 cwise = bool(raw_input('Press any key other than enter to consider countrywise projections, too.'))
+if raw_input('Press any key other than enter to use .png instead of .pdf: '):
+    extension = '.png'
+else:
+    extension = '.pdf'
 
 # Plotting setup:
 styles = {1: ':', 2: '--', 3: '-.', 4: '-', 5: ':', 6: '--', 7: '-.', 8: '-'}
@@ -119,7 +123,7 @@ plt.gcf()
 plt.legend(loc=2)
 plt.xlabel(r'Time elapsed (years)')
 plt.ylabel(r'Population')
-plt.savefig('plots/population_' + model + '.pdf', bbox_inches='tight')
+plt.savefig('plots/population_' + model + extension, bbox_inches='tight')
 
 # Plot world population curves:
 plt.clf()
@@ -140,7 +144,7 @@ else:
     plt.legend(loc=4)
 plt.xlabel(r'Time elapsed (years)')
 plt.ylabel(r'World population')
-plt.savefig('plots/world_population_' + model + '.pdf', bbox_inches='tight')
+plt.savefig('plots/world_population_' + model + extension, bbox_inches='tight')
 
 # Plot fossil fuel curves:
 for fuel in fossil_fuels:
@@ -157,7 +161,7 @@ for fuel in fossil_fuels:
         plt.legend(loc=4)
         plt.xlabel(r'Time elapsed (years)')
         plt.ylabel(r'{y} (tonnes)'.format(y=fuel_names[fuel]))
-        plt.savefig('plots/{y1}_{y2}.pdf'.format(y1=fuel_names[fuel], y2=model), bbox_inches='tight')
+        plt.savefig('plots/{y1}_{y2}'.format(y1=fuel_names[fuel], y2=model) + extension, bbox_inches='tight')
 
     # Worldwide projection:
     plt.clf()
@@ -169,8 +173,8 @@ for fuel in fossil_fuels:
     plt.gcf()
     plt.legend(loc=4)
     plt.xlabel(r'Time elapsed (years)')
-    plt.ylabel(r'{y} (tonnes)')
-    plt.savefig('plots/world_{y1}_{y2}.pdf'.format(y1=fuel_names[fuel], y2=model), bbox_inches='tight')
+    plt.ylabel(r'{y} (tonnes)'.format(y=fuel_names[fuel]))
+    plt.savefig('plots/world_{y1}_{y2}'.format(y1=fuel_names[fuel], y2=model) + extension, bbox_inches='tight')
 
 # Plot country-wise biomass curves:
 if bio:
@@ -192,7 +196,7 @@ if bio:
         plt.legend(loc=4)
         plt.xlabel(r'Time elapsed (years)')
         plt.ylabel(r'Biomass (tonnes)')
-        plt.savefig('plots/bio_' + model + '_g={y1}.pdf'.format(y1=g), bbox_inches='tight')
+        plt.savefig('plots/bio_' + model + '_g={y1}'.format(y1=g) + extension, bbox_inches='tight')
 
     # Plot worldwide projected biomass curves:
     plt.clf()
@@ -212,7 +216,7 @@ if bio:
     plt.legend(loc=4)
     plt.xlabel(r'Time elapsed (years)')
     plt.ylabel(r'Biomass (tonnes)')
-    plt.savefig('plots/world_bio_' + model + '_g={y1}.pdf'.format(y1=g), bbox_inches='tight')
+    plt.savefig('plots/world_bio_' + model + '_g={y1}'.format(y1=g) + extension, bbox_inches='tight')
 
 # Plot worldwide projected emissions curves:
 plt.clf()
@@ -235,7 +239,7 @@ plt.gcf()
 plt.legend(loc=4)
 plt.xlabel(r'Time elapsed (years)')
 plt.ylabel(r'Estimated world CO2 emissions (tonnes)')
-plt.savefig('plots/C02_emissions_' + model + '_g={y1}_trees={y2}.pdf'.format(y1=g, y2=trees), bbox_inches='tight')
+plt.savefig('plots/C02_emissions_' + model + '_g={y1}_trees={y2}'.format(y1=g, y2=trees) + extension, bbox_inches='tight')
 
 # Plot worldwide projected temperature change curves:
 plt.clf()
@@ -249,4 +253,4 @@ plt.gcf()
 plt.legend(loc=4)
 plt.xlabel(r'Time elapsed (years)')
 plt.ylabel(r'Estimated world temperature change (Kelvin)')
-plt.savefig('plots/temp_change_{y0}_g={y1}_trees={y2}.pdf'.format(y0=model, y1=g, y2=trees), bbox_inches='tight')
+plt.savefig('plots/temp_change_{y0}_g={y1}_trees={y2}'.format(y0=model, y1=g, y2=trees) + extension, bbox_inches='tight')
